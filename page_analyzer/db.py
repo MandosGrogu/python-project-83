@@ -4,7 +4,7 @@ import psycopg2
 import psycopg2.extras
 import os
 
-load_dotenv()
+load_dotenv("secret.env")
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 
