@@ -35,20 +35,37 @@
         </table>
       </div>
       <h2 class="mt-5 mb-3">Проверки</h2>
-      <form method="get" action="/">
+      <form method="post" action={{ url_for('post_check', id=url.id) }}>
         <input type="submit" class="btn btn-primary" value="Запустить проверку">
       </form>
-    <div>
 
-  <table class="table table-bordered table-hover mt-2" data-test="checks">
-      <tr>
-        <th>ID</th>
-        <th>Код ответа</th>
-        <th>h1</th>
-        <th>title</th>
-        <th>description</th>
-      </tr>
-    </table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover text-nowrap" data-test="checks"> 
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Код ответа</th>
+              <th>h1</th>
+              <th>title</th>
+              <th>description</th>
+              <th>Дата создания</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for check_url in check_urls %}
+            <tr>
+                <td>{{check_url.url_id}}</td>
+                <td>{{check_url.status_code}}</td>
+                <td>{{check_url.h1}}</td>
+                <td>{{check_url.title}}</td>
+                <td>{{check_url.description}}</td>
+                <td>{{check_url.created_at}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    <div>
 
 </body>
 </html>

@@ -47,3 +47,18 @@ def get_urls():
     repo = URLsRepository()
     urls = [dict(row) for row in repo.get_all()]
     return render_template('urls/show_all.html', urls=urls,)
+
+@app.post('/urls/<id>/checks')
+def post_check(id):
+
+    repo = URLsRepository()
+    url = repo.check_url_by_id(id)[0]
+    check_url = repo.save_check(url)
+    flash('Страница успешно проверена', 'success')
+    errors = ''
+    if errors:
+        flash('Произошла ошибка при проверке', 'danger')
+    messages = get_flashed_messages(with_categories=True)
+
+    check_urls = [dict(row) for row in repo.get_all_checks(id)]
+    return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
