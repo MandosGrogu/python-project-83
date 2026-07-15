@@ -1,3 +1,4 @@
+import asyncio
 import os
 import requests
 
@@ -14,55 +15,58 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 @app.route('/')
-def index():
+async def index():
 
     return render_template('index.html')
 
 @app.post('/urls')
-def post_urls(save=URLsRepository().save):
+async def post_urls(save=URLsRepository().save):
 
     repo = URLsRepository()
-    data =request.form.get('url')
+    data = request.form.get('url')
     errors = validate(data)
     if errors:
         flash(errors, 'danger')
         messages = get_flashed_messages(with_categories=True)
         return render_template("index.html", url=data, messages=messages), 422
     data = 'https://' + urlparse(data).netloc
-    if not repo.check_url_by_name(data):
-        new_id = save(data)
+    existed_data = await repo.check_url_by_name(data)
+    if not existed_data:
+        new_id = await save(data)
         flash("Страница успешно добавлена", "success")
     else:
-        new_id = repo.check_url_by_name(data)['id']
+        new_id = existed_data['id']
         flash("Страница уже существует", 'info')
     return redirect(url_for("get_url", id=new_id))
 
 @app.route('/urls/<id>')
-def get_url(id):
+async def get_url(id):
 
     messages = get_flashed_messages(with_categories=True)
     repo = URLsRepository()
-    if not repo.check_url_by_id(id):
+    existed_data = await repo.check_url_by_id(id)
+    if not existed_data:
         abort(404)
     else:
-        url = repo.check_url_by_id(id)[0]
+        url = existed_data
     return render_template('urls/show.html', url=url, messages=messages,)
 
 @app.get('/urls')
-def get_urls():
+async def get_urls():
 
     repo = URLsRepository()
-    urls = [dict(row) for row in repo.get_all()]
+    urls = await repo.get_all()
     return render_template('urls/show_all.html', urls=urls,)
 
 @app.post('/urls/<id>/checks')
-def post_check(id):
+async def post_check(id):
 
     repo = URLsRepository()
-    if not repo.check_url_by_id(id):
+    existed_data = await repo.check_url_by_id(id)
+    if not existed_data:
         abort(404)
     else:
-        url = repo.check_url_by_id(id)[0]
+        url = existed_data
     try:
         r = requests.get(url['name'])
         r.raise_for_status()
@@ -75,7 +79,7 @@ def post_check(id):
             descr = soup.find('meta')['content']
         else:
             descr = ''
-        repo.save_check(url, status_code, h1, title, descr)
+        await repo.save_check(url, status_code, h1, title, descr)
         flash('Страница успешно проверена', 'success')
         errors = ''
     except Exception as e:
@@ -83,6 +87,6 @@ def post_check(id):
     if errors:
         flash(f'Произошла ошибка при проверке: {errors}', 'danger')
     messages = get_flashed_messages(with_categories=True)
-
-    check_urls = [dict(row) for row in repo.get_all_checks(id)]
+    print(id)
+    check_urls = await repo.get_all_checks(id)
     return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)

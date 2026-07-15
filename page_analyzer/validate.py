@@ -1,7 +1,9 @@
+import asyncio
 import validators
 
 def validate(data):
     errors = ""
-    if not validators.url(data):
+    res = validators.url(data)
+    if not res:
         errors = "Указанная страница невалидна!"
     return errors
