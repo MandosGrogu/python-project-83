@@ -22,7 +22,7 @@ class URLsRepository:
                 new_id = await conn.fetchrow('INSERT INTO urls (name, created_at) VALUES ($1, $2) RETURNING id;', url, datetime.date.today(),)
             await conn.close()
         else:
-            new_id = existed_url['id']
+            new_id = existed_url
         return new_id
     
     async def save_check(self, url, status_code, h1, title, descr):

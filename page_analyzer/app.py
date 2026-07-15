@@ -35,9 +35,9 @@ async def post_urls(save=URLsRepository().save):
         new_id = await save(data)
         flash("Страница успешно добавлена", "success")
     else:
-        new_id = existed_data['id']
+        new_id = existed_data
         flash("Страница уже существует", 'info')
-    return redirect(url_for("get_url", id=new_id))
+    return redirect(url_for("get_url", id=new_id['id']))
 
 @app.route('/urls/<id>')
 async def get_url(id):
