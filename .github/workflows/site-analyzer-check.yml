@@ -1,0 +1,38 @@
+name: site-analyzer-check
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+        # make depends on uv
+      - name: Install dependencies
+        run: |
+          pip install uv
+          make install
+      - name: Run linter and pytest
+        run: |
+          make check
+      - name: Open Web Client Directory
+        run: |
+          ls -la
+      - name: Run test coverage
+        run: |
+          make test-coverage
+      - name: SonarQubeScan
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=MandosGrogu_python-project-83
+            -Dsonar.organization=mandosgrogu-2
+            -Dsonar.python.coverage.reportPaths=coverage.xml

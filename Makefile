@@ -21,6 +21,12 @@ package-install:
 lint:
 	uv run ruff check
 
+check: 
+	test lint
+
+test-coverage:
+	uv run pytest --cov=app --cov-report xml
+
 PORT ?= 8000
 start:
 	uv run gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app

@@ -25,15 +25,13 @@ class URLsRepository:
             new_id = existed_url['id']
         return new_id
     
-    def save_check(self, url):
+    def save_check(self, url, status_code, h1, title, descr):
 
         conn = psycopg2.connect(DATABASE_URL)
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as curs:
-            curs.execute('INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) VALUES (%s, %s, %s, %s, %s, %s) RETURNING url_id;', (url['id'], 200, '', '', '', datetime.today().strftime('%Y-%m-%d')))
-            new_id = curs.fetchone()
+            curs.execute('INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) VALUES (%s, %s, %s, %s, %s, %s);', (url['id'], status_code, h1, title, descr, datetime.today().strftime('%Y-%m-%d')))
         conn.commit()
         conn.close()
-        return new_id
 
     def check_url_by_id(self, url_id):
 

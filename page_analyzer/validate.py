@@ -2,6 +2,6 @@ import validators
 
 def validate(data):
     errors = ""
-    if validators.url(data) != True:
+    if not validators.url(data):
         errors = "Указанная страница невалидна!"
     return errors
