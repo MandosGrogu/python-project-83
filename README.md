@@ -1,6 +1,6 @@
 ### тесты Hexlet и иные бейджи:
 
-[!\[Actions Status](https://github.com/MandosGrogu/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/MandosGrogu/python-project-83/actions)
+[![Actions Status](https://github.com/MandosGrogu/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/MandosGrogu/python-project-83/actions)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=MandosGrogu_python-project-83&metric=bugs)](https://sonarcloud.io/summary/new_code?id=MandosGrogu_python-project-83)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=MandosGrogu_python-project-83&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=MandosGrogu_python-project-83)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MandosGrogu_python-project-83&metric=coverage)](https://sonarcloud.io/summary/new_code?id=MandosGrogu_python-project-83)

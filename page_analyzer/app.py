@@ -21,6 +21,7 @@ def index():
 @app.post('/urls')
 def post_urls(save=URLsRepository().save):
 
+    repo = URLsRepository()
     data =request.form.get('url')
     errors = validate(data)
     if errors:
@@ -28,8 +29,12 @@ def post_urls(save=URLsRepository().save):
         messages = get_flashed_messages(with_categories=True)
         return render_template("index.html", url=data, messages=messages), 422
     data = 'https://' + urlparse(data).netloc
-    new_id = save(data)
-    flash("Страница успешно добавлена", "success")
+    if not repo.check_url_by_name(data):
+        new_id = save(data)
+        flash("Страница успешно добавлена", "success")
+    else:
+        new_id = repo.check_url_by_name(data)['id']
+        flash("Страница уже существует", 'info')
     return redirect(url_for("get_url", id=new_id))
 
 @app.route('/urls/<id>')
