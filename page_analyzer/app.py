@@ -1,4 +1,3 @@
-import asyncio
 import os
 import requests
 
@@ -7,12 +6,27 @@ from page_analyzer.db import URLsRepository
 from page_analyzer.validate import validate
 from dotenv import load_dotenv
 from flask import abort, Flask, flash, get_flashed_messages, render_template, request, redirect, url_for
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from urllib.parse import urlparse
 
 load_dotenv("secret.env")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+session = requests.Session()
+
+retry_strategy = Retry(
+    total=5,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504], 
+    allowed_methods=["GET", "POST"] 
+)
+
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
 
 @app.route('/')
 async def index():
@@ -68,7 +82,7 @@ async def post_check(id):
     else:
         url = existed_data
     try:
-        r = requests.get(url['name'])
+        r = session.get(url['name'])
         r.raise_for_status()
         status_code = r.status_code
         soup = BeautifulSoup(r.text, 'html.parser')

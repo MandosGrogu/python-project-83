@@ -21,5 +21,5 @@ def test_get_urls_route(client):
 
 def test_post_check_route(client):
 
-    response = client.post("/urls/10000000000/checks")
+    response = client.post("/urls/100000/checks")
     assert response.status_code == 404

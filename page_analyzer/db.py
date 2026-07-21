@@ -1,7 +1,5 @@
-import asyncio
 import os
 import asyncpg
-import psycopg2.extras
 
 import datetime
 from dotenv import load_dotenv

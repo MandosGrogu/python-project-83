@@ -1,4 +1,3 @@
-import asyncio
 import validators
 
 def validate(data):
