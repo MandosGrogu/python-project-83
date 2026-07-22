@@ -25,7 +25,7 @@ check:
 	test lint
 
 test-coverage:
-	uv run pytest --cov=app --cov-report xml
+	uv run pytest --cov=page_analyzer --cov-report xml
 
 PORT ?= 8000
 start:
