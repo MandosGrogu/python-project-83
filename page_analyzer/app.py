@@ -101,6 +101,5 @@ async def post_check(id):
     if errors:
         flash(f'Произошла ошибка при проверке: {errors}', 'danger')
     messages = get_flashed_messages(with_categories=True)
-    print(id)
     check_urls = await repo.get_all_checks(id)
     return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
