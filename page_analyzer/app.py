@@ -1,32 +1,17 @@
 import os
 import requests
 
-from bs4 import BeautifulSoup
 from page_analyzer.db import URLsRepository
+from page_analyzer.preprocess import url_parse
+from page_analyzer.preprocess import html_parse
 from page_analyzer.validate import validate
 from dotenv import load_dotenv
 from flask import abort, Flask, flash, get_flashed_messages, render_template, request, redirect, url_for
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from urllib.parse import urlparse
 
 load_dotenv("secret.env")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
-session = requests.Session()
-
-retry_strategy = Retry(
-    total=5,
-    backoff_factor=1,
-    status_forcelist=[429, 500, 502, 503, 504], 
-    allowed_methods=["GET", "POST"] 
-)
-
-adapter = HTTPAdapter(max_retries=retry_strategy)
-session.mount("http://", adapter)
-session.mount("https://", adapter)
 
 @app.route('/')
 async def index():
@@ -43,7 +28,7 @@ async def post_urls(save=URLsRepository().save):
         flash(errors, 'danger')
         messages = get_flashed_messages(with_categories=True)
         return render_template("index.html", url=data, messages=messages), 422
-    data = 'https://' + urlparse(data).netloc
+    data = url_parse(data)
     existed_data = await repo.check_url_by_name(data)
     if not existed_data:
         new_id = await save(data)
@@ -82,17 +67,13 @@ async def post_check(id):
     else:
         url = existed_data
     try:
-        r = session.get(url['name'])
+        r = requests.get(url['name'])
         r.raise_for_status()
         status_code = r.status_code
-        soup = BeautifulSoup(r.text, 'html.parser')
-        h1 = soup.find('h1').get_text() if soup.find('h1') is not None else ''
-        title = soup.find('title').get_text() if soup.find('title') is not None else ''
-        if soup.find('meta') is not None and 'name' in soup.find('meta').attrs.keys() \
-        and soup.find('meta')['name'] == 'description':
-            descr = soup.find('meta')['content']
-        else:
-            descr = ''
+        result = html_parse(r.text)
+        h1 = result['h1']
+        title = result['title']
+        descr = result['descr']
         await repo.save_check(url, status_code, h1, title, descr)
         flash('Страница успешно проверена', 'success')
         errors = ''
