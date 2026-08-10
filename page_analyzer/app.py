@@ -57,7 +57,7 @@ async def get_urls():
     urls = await repo.get_all()
     return render_template('urls/show_all.html', urls=urls,)
 
-@app.post('/urls/<id>/checks')
+@app.post('/urls/<id>')
 async def post_check(id):
 
     repo = URLsRepository()
