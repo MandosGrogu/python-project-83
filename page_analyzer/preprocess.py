@@ -11,7 +11,7 @@ def normalize(text):
 
     res_text = text
     if len(text) > 200:
-        res_text = text[0:201] + '...'
+        res_text = text[0:200] + '...'
     return res_text
 
 def html_parse(text):
