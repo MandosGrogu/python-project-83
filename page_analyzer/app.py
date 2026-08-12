@@ -48,7 +48,8 @@ async def get_url(id):
         abort(404)
     else:
         url = existed_data
-    return render_template('urls/show.html', url=url, messages=messages,)
+    check_urls = await repo.get_all_checks(id)
+    return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
 
 @app.get('/urls')
 async def get_urls():
@@ -81,6 +82,5 @@ async def post_check(id):
         errors = f'{e}'
     if errors:
         flash('Произошла ошибка при проверке', 'danger')
-    messages = get_flashed_messages(with_categories=True)
-    check_urls = await repo.get_all_checks(id)
-    return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
+    #return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
+    return redirect(url_for("get_url", id=id))
