@@ -57,6 +57,6 @@ class URLsRepository:
     async def get_all(self,):
         conn = await asyncpg.connect(DATABASE_URL)
         async with conn.transaction():
-            url = await conn.fetch('SELECT DISTINCT ON (u.id), u.id, u.name, uc.created_at, uc.status_code FROM urls as u LEFT JOIN url_checks as uc ON u.id = uc.url_id ORDER BY u.id, uc.created_at DESC NULLS LAST;')
+            url = await conn.fetch('SELECT DISTINCT ON (u.id) u.id, u.name, uc.created_at, uc.status_code FROM urls as u LEFT JOIN url_checks as uc ON u.id = uc.url_id ORDER BY u.id, uc.created_at DESC NULLS LAST;')
         await conn.close()
         return url
