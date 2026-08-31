@@ -4,5 +4,5 @@ def validate(data):
     errors = ""
     res = validators.url(data)
     if not res:
-        errors = "Некорректный URL"
+        errors = "Указанная страница невалидна!"
     return errors
