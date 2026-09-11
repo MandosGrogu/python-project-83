@@ -18,10 +18,7 @@ render-start:
 package-install:
 	uv tool install dist/*.whl
 
-lint:
-	uv run ruff check
-
-check: 
+lint: 
 	test lint
 
 test-coverage:
