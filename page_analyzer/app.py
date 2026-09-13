@@ -1,22 +1,33 @@
 import os
+
 import requests
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    abort,
+    flash,
+    get_flashed_messages,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
 from page_analyzer.db import URLsRepository
-from page_analyzer.preprocess import url_parse
-from page_analyzer.preprocess import html_parse
+from page_analyzer.preprocess import html_parse, url_parse
 from page_analyzer.validate import validate
-from dotenv import load_dotenv
-from flask import abort, Flask, flash, get_flashed_messages, render_template, request, redirect, url_for
 
 load_dotenv("secret.env")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+
 @app.route('/')
 async def index():
 
     return render_template('index.html')
+
 
 @app.post('/urls')
 async def post_urls(save=URLsRepository().save):
@@ -38,6 +49,7 @@ async def post_urls(save=URLsRepository().save):
         flash("Страница уже существует", 'info')
     return redirect(url_for("get_url", id=new_id['id']))
 
+
 @app.route('/urls/<id>')
 async def get_url(id):
 
@@ -49,7 +61,11 @@ async def get_url(id):
     else:
         url = existed_data
     check_urls = await repo.get_all_checks(id)
-    return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
+    return render_template('urls/show.html', 
+    url=url, 
+    check_urls=check_urls, 
+    messages=messages,)
+
 
 @app.get('/urls')
 async def get_urls():
@@ -57,6 +73,7 @@ async def get_urls():
     repo = URLsRepository()
     urls = await repo.get_all()
     return render_template('urls/show_all.html', urls=urls,)
+
 
 @app.post('/urls/<id>/checks')
 async def post_check(id):
@@ -82,5 +99,4 @@ async def post_check(id):
         errors = f'{e}'
     if errors:
         flash('Произошла ошибка при проверке', 'danger')
-    #return render_template('urls/show.html', url=url, check_urls=check_urls, messages=messages,)
     return redirect(url_for("get_url", id=id))
