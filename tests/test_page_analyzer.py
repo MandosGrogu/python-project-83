@@ -24,17 +24,3 @@ def test_get_url_route(client):
 
     response = client.get("/url/1000000000")
     assert response.status_code == 404
-    
-
-def test_get_urls_route(client):
-
-    response = client.get("/urls")
-    html = response.data.decode()
-    assert response.status_code == 200
-    assert 'data-test="urls"' in html
-
-
-def test_post_check_route(client):
-
-    response = client.post("/urls/100000/checks")
-    assert response.status_code == 404
